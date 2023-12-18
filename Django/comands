@@ -1,1 +1,60 @@
+python manage.py makemigrations
+python manage.py migrate
+python manage.py shell
+from NEWS.models import Author, Category, Post, Comment
+
+# Создание пользователей
+u1 = User.objects.create_user(username='name')
+u2 = User.objects.create_user(username='name')
+
+# Создание объектов модели Author
+a1 = Author.objects.create(authorUser=u1) 
+a2 = Author.objects.create(authorUser=u2) 
+
+# Добавление категорий
+c1 = Category.objects.create(name='categori')
+c2 = Category.objects.create(name='categori')
+
+# Создание статей и новости
+p1 = Post.objects.create(author=a1, categoryType='Новости', title='Статья', text='текст статьи 1') 
+p2 = Post.objects.create(author=a2, categoryType='Новости', title='Статья', text='текст статьи 2') 
+
+# Присвоение категорий
+Post.objects.get(id=1).postCategory.add(Category.objects.get(id=1))
+Post.objects.get(id=2).postCategory.add(Category.objects.get(id=2))
+
+# Создание комментариев
+Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=Author.objects.get(id=1).authorUser, text='Текст новостей') 
+Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=Author.objects.get(id=2).authorUser, text='Текст новостей')
+
+
+
+# Применение функций like() и dislike() к объектам
+Comment.objects.get(id=1).like() 
+Comment.objects.get(id=1).dislike()
+Comment.objects.get(id=2).like() 
+Comment.objects.get(id=2).dislike() 
+Comment.objects.get(id=1).rating
+Comment.objects.get(id=2).rating
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).dislike()
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).dislike()
+
+
+# Обновление рейтингов пользователей
+A = Author.objects.get(id=1) 
+  A.update_rating()
+  A.ratingAuthor 
+A = Author.objects.get(id=2) 
+  A.update_rating()
+  A.ratingAuthor 
+
+# Вывод username и рейтинга лучшего пользователя
+ best_author = Author.objects.order_by('-ratingAuthor')[:1]                                        
+>>> best_author 
+
+
+
+
 
