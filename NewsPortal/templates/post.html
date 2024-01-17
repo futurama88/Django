@@ -1,0 +1,104 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+<!-- Подключаем новый файл с нашим тегом -->
+{% load custom_tags %}
+
+
+<!-- Название у нас будет Product -->
+{% block title %}
+Post
+{% endblock title %}
+
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+<h3>{{ time_now|date:'M d Y' }}</h3>
+
+<h1>Все новости</h1>
+{# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+<form action="" method="get">
+    {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+    {{ filterset.form.as_p }}
+    {# Добавим кнопку отправки данных формы #}
+    <input type="submit" value="show"/>
+</form>
+
+<hr>
+
+{# Теперь будем проверять не request.user.is_authenticated, а конкретные права #}
+{% if perms.news.add_post %}
+<a href="{% url 'post_create' %}">Добавить новость</a>
+{% endif %}
+
+{% if posts %}
+<table>
+    <tr>
+        <td>Дата</td>
+        <td>Название</td>
+        <td>Описание</td>
+        <td>Рейтинг</td>
+        {# Условие получается составным. #}
+        {% if perms.news.change_post or perms.news.delete_post %}
+        <td>Действия</td>
+        {% endif %}
+    </tr>
+
+    <!-- Для каждого товара будете генерироваться новая строчка,
+    т.е. новый HTML код, который указан в теле цикла.
+    При этом сам цикл работает точно так же, как и в Python.
+    product — переменная цикла, т.е. наш товар полученный из списка -->
+    {% for post in posts %}
+    <tr>
+        <td>{{ post.author }}</td>
+        <td>{{ post.text|truncatewords:20 }}</td>
+        <td>{{ post.categoryType }}</td>
+        <td>{{ post.dataCreation}}</td>
+        <td>{{ post.title}}</td>
+        <td>{{ post.rating }}</td>
+
+        <td>
+            {# А здесь доступ для каждой ссылки теперь будем проверять отдельно #}
+            {% if perms.news.change_post %}
+            <a href="{% url 'post_update' i.id %}">Изменить</a>
+            {% endif %}
+            {% if perms.news.delete_post %}
+            <a href="{% url 'post_delete' i.id %}">Удалить</a>
+            {% endif %}
+        </td>
+
+    </tr>
+    {% endfor %}
+
+</table>
+{% else %}
+<h2>Новостей нет!</h2>
+{% endif %}
+
+{# Добавляем пагинацию на страницу #}
+
+{# Информация о предыдущих страницах #}
+{% if page_obj.has_previous %}
+<a href="?page=1">1</a>
+{% if page_obj.previous_page_number != 1 %}
+...
+<a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+{% endif %}
+{% endif %}
+
+{# Информация о текущей странице #}
+{{ page_obj.number }}
+
+{# Информация о следующих страницах #}
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+{% if paginator.num_pages != page_obj.next_page_number %}
+...
+<a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+{% endif %}
+{% endif %}
+
+
+{{ post_detail }}
+{% endblock content %}
