@@ -30,8 +30,9 @@ class PostFilter(FilterSet):
         fields = {
             # поиск по названию
             'title': ['icontains'],
+            'author': ['exact'],
             # количество товаров должно быть больше или равно
             'dataCreation': ['day'],
-            # 'title': ['exact'],
+            'title': ['exact'],
 
         }
