@@ -158,19 +158,19 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = "testshadrin"
+EMAIL_HOST_USER = "........."
 EMAIL_HOST_PASSWORD = "abhflbluxiaavbys"
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
-DEFAULT_FROM_EMAIL = "testshadrin@yandex.ru"
+DEFAULT_FROM_EMAIL = " @yandex.ru"
 
-SERVER_EMAIL = "testshadrin@yandex.ru"
+SERVER_EMAIL = " @yandex.ru"
 MANAGERS = (
-    ('Кирилл', 'Schadrin88@gmail.com'),
+    ('Кирилл', ' @gmail.com'),
 
 )
 
 ADMINS = (
-    ('Кирилл', 'schadrink.s.88064@gmail.com'),
+    ('Кирилл', ' @gmail.com'),
 )
