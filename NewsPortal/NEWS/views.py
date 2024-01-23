@@ -183,3 +183,33 @@ class PostDelete(DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('post_list')
+
+
+
+
+class CategoryListView(PostView):
+    model = Post
+    template_name = 'category_list.html'
+    context_object_name = 'category_news_list'
+
+    def get_queryset(self):
+        self.postCategory = get_object_or_404(Category, id=self.kwargs['pk'])
+        queryset = Post.objects.filter(postCategory=self.postCategory).order_by('-dataCreation')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subscriber'] = self.request.user not in self.postCategory.subscribers.all()
+        context['postCategory'] = self.postCategory
+        return context
+
+
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    postCategory = Category.objects.get(id=pk)
+    postCategory.subscribers.add(user)
+
+    message = 'Вы успешно подписались на рассылку новостей категории '
+    return render(request, 'subscribe.html', {'postCategory': postCategory, 'message': message})
+
