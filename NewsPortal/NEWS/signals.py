@@ -1,34 +1,41 @@
-from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.db.models.signals import post_save
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 
-from .models import Product
+from projecttest import settings
+from .models import PostCategory
 
 
-@receiver(post_save, sender=Product)
-def product_created(instance, created, **kwargs):
-    if not created:
-        return
+def send_notifications(preview, pk, title, subscribers):
+    html_content = render_to_string(
+        'cost_created_email.html',
+        {
+            'text': preview,
+            'link': f'{settings.SITE_URL}/news/{pk}'
+        }
 
-    emails = User.objects.filter(
-        subscriptions__category=instance.category
-    ).values_list('email', flat=True)
-
-    subject = f'Новый товар в категории {instance.category}'
-
-    text_content = (
-        f'Товар: {instance.name}\n'
-        f'Цена: {instance.price}\n\n'
-        f'Ссылка на товар: http://127.0.0.1:8000{instance.get_absolute_url()}'
     )
-    html_content = (
-        f'Товар: {instance.name}<br>'
-        f'Цена: {instance.price}<br><br>'
-        f'<a href="http://127.0.0.1{instance.get_absolute_url()}">'
-        f'Ссылка на товар</a>'
+
+    msg = EmailMultiAlternatives(
+        subject=title,
+        body='',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=subscribers,
     )
-    for email in emails:
-        msg = EmailMultiAlternatives(subject, text_content, None, [email])
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
+
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
+
+
+@receiver(m2m_changed, sender=PostCategory)
+def notify_about_new_post(sender, instance, **kwargs):
+    if kwargs['action'] == 'post_add':
+        categories = instance.postCategory.all()
+        subscribers_emails = []
+
+    for cat in categories:
+        subscribers = cat.subscribers.all()
+        subscribers_emails += [s.email for s in subscribers]
+
+        send_notifications(instance.preview(), instance.pk, instance.title, subscribers_emails)
