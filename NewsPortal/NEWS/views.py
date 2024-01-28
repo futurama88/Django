@@ -213,3 +213,8 @@ def subscribe(request, pk):
     message = 'Вы успешно подписались на рассылку новостей категории '
     return render(request, 'subscribe.html', {'postCategory': postCategory, 'message': message})
 
+class IndexView(View):
+    def get(self, request):
+        printer.delay(10)
+        hello.delay()
+        return HttpResponse('Hello!')
