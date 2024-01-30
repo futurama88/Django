@@ -41,7 +41,7 @@ class Product(models.Model):
 class Category(models.Model):
     # названия категорий тоже не должны повторяться
     name = models.CharField(max_length=100, unique=True)
-
+    subscribers = models.ManyToManyField(User, blank=True, related_name='categories')
     def __str__(self):
         return self.name.title()
 
