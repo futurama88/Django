@@ -8,6 +8,7 @@ from django.db.models import Sum
 
 from django.urls import reverse
 
+from django.core.cache import cache
 
 # Товар для нашей витрины
 class Product(models.Model):
