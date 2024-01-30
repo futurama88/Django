@@ -12,7 +12,7 @@ urlpatterns = [
     # Т.к. наше объявленное представление является классом,
     # а Django ожидает функцию, нам надо представить этот класс в виде view.
     # Для этого вызываем метод as_view.
-    path('', cache_page(60)(PostView.as_view(), name='post_list')),
+    path('', cache_page(60)(PostView.as_view()), name='post_list'),
     # pk — это первичный ключ товара, который будет выводиться у нас в шаблон
     # int — указывает на то, что принимаются только целочисленные значения
     path('<int:pk>',cache_page(300)(PostCategoryView.as_view())),
