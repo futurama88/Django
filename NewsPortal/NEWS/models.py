@@ -107,8 +107,12 @@ class Post(models.Model):
         return self.text[0:123] + '...'
 
         
-    # def get_absolute_url(self):
-    #     return reverse('post_detail', args=[str(self.id)])
+     def get_absolute_url(self):
+         return reverse('post_detail', args=[str(self.id)])
+     
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # сначала вызываем метод родителя, чтобы объект сохранился
+        cache.delete(f'post_detail-{self.pk}')  # затем удаляем его из кэша, чтобы сбросить его
 
 
 
