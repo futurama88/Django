@@ -2,6 +2,8 @@ from django.urls import path
 # Импортируем созданное нами представление
 from .views import (PostView, PostCategoryView, CommentView, ArticleView, SearchView, create_post,
                     PostUpdate, PostDelete, PostCreate, subscriptions)
+from django.views.decorators.cache import cache_page
+
 
 urlpatterns = [
     # path — означает путь.
@@ -13,7 +15,7 @@ urlpatterns = [
     path('', PostView.as_view(), name='post_list'),
     # pk — это первичный ключ товара, который будет выводиться у нас в шаблон
     # int — указывает на то, что принимаются только целочисленные значения
-    path('<int:pk>', PostCategoryView.as_view()),
+    path('<int:pk>',cache_page(60)(PostCategoryView.as_view())),
     path('comment/<int:pk>', CommentView.as_view()),
     path('article/<int:pk>', ArticleView.as_view()),
     path('search/', SearchView.as_view()),
