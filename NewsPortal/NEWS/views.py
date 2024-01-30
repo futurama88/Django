@@ -134,6 +134,13 @@ class PostCategoryView(DetailView):
     template_name = 'posts.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post_detail'
+    
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'post_detail-{self.kwargs["pk"]}', None)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post_detail-{self.kwargs["pk"]}', obj)
+        return obj
 
 
 class CommentView(DetailView):
