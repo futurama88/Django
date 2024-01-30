@@ -12,7 +12,7 @@ from django.db.models import Exists, OuterRef
 from django.views.decorators.csrf import csrf_protect
 from .models import Subscription, Category
 
-from django.core import cache
+from django.core.cache import cache
 
 def create_post(request):
     form = PostForm()
