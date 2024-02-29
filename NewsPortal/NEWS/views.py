@@ -14,6 +14,11 @@ from .models import Subscription, Category
 
 from django.core.cache import cache
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def create_post(request):
     form = PostForm()
     if request.method == 'POST':
