@@ -201,19 +201,19 @@ LOGGING = {
     'disable_existing_logger': False,
     'loggers': {
         'django': {
-            'handlers': ['Info', 'console', 'console_warning', 'console_error_crit'],
+            'handlers': ['Info', 'console', 'console_info', 'console_warning', 'console_error_crit'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['error_crit', 'admin_mail'],
+            'handlers': ['error_crit', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },
         'django.server': {
-            'handlers': ['error_crit', 'admin_mail'],
-            'level': 'ERROR',
-            'propagate': False,
+            'handlers': ['error_crit', 'mail_admins'],
+            'level': 'INFO',
+            'propagate': True,
         },
         'django.template': {
             'handlers': ['error_crit'],
@@ -238,7 +238,7 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'general.log',
             'formatter': 'myformatter',
-            'filters': ['require_debug_true'],
+            'filters': ['require_debug_false'],
         },
         'console': {
             'level': 'DEBUG',
@@ -246,14 +246,20 @@ LOGGING = {
             'formatter': 'form',
             'filters': ['require_debug_true'],
         },
+        'console_info': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'myformatter',
+            'filters': ['require_debug_true'],
+        },
         'console_warning': {
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'class': 'logging.StreamHandler',
             'formatter': 'warning',
             'filters': ['require_debug_true'],
         },
         'console_error_crit': {
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'error',
             'filters': ['require_debug_true'],
@@ -272,7 +278,7 @@ LOGGING = {
             'formatter': 'myformatter',
             'filters': ['require_debug_true'],
         },
-        'admin_mail': {
+        'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'warning',
@@ -291,21 +297,21 @@ LOGGING = {
             'style': '{',
         },
         'warning': {
-                'format': '{levelname} {message} {asctime} {pathname} ',
-                'datetime': '%Y.%m.%d %H:%M:%S',
-                'style': '{',
+            'format': '{levelname} {message} {asctime} {pathname} ',
+            'datetime': '%Y.%m.%d %H:%M:%S',
+            'style': '{',
         },
         'error': {
-                'format': '{levelname} {message} {asctime} {pathname} {exc_info}',
-                'datetime': '%Y.%m.%d %H:%M:%S',
-                'style': '{',
+            'format': '{levelname} {message} {asctime} {pathname} {exc_info}',
+            'datetime': '%Y.%m.%d %H:%M:%S',
+            'style': '{',
         },
 
     },
     'filters': {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
-         },
+        },
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
         },
