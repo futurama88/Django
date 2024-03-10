@@ -25,6 +25,7 @@ class Product(models.Model):
         to='Category',
         on_delete=models.CASCADE,
         related_name='products',  # все продукты в категории будут доступны через поле products
+       verbose_name=pgettext_lazy('help text for MyModel model', 'This is the help text'),
     )
     price = models.FloatField(
         validators=[MinValueValidator(0.0)],
@@ -40,7 +41,7 @@ class Product(models.Model):
 # Категория, к которой будет привязываться товар
 class Category(models.Model):
     # названия категорий тоже не должны повторяться
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True, help_text=_('category name'))
     subscribers = models.ManyToManyField(User, blank=True, related_name='categories')
     
     def __str__(self):
