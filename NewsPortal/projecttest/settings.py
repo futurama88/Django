@@ -65,7 +65,8 @@ MIDDLEWARE = [
 
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 
-    'allauth.account.middleware.AccountMiddleware'
+    'allauth.account.middleware.AccountMiddleware',
+    'projecttest.middlewares.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'projecttest.urls'
