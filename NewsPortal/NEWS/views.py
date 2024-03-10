@@ -1,3 +1,4 @@
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, PostCategory, Comment
 from datetime import datetime
@@ -19,15 +20,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def create_post(request):
-    form = PostForm()
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/news/')
+# def create_post(request):
+#     form = PostForm()
+#     if request.method == 'POST':
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect('/news/')
 
-    return render(request, 'post_edit.html', {'form': form})
+#     return render(request, 'post_edit.html', {'form': form})
 
 
 @login_required
@@ -59,6 +60,16 @@ def subscriptions(request):
         'subscriptions.html',
         {'categories': categories_with_subscriptions},
     )
+
+class Index(View):
+    def get(self, request):
+        models = Post.objects.all()
+
+        context = {
+            'models': models,
+        }
+
+        return HttpResponse(render(request, 'language.html', context))
 
 
 class PostView(ListView):
