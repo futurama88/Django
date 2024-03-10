@@ -10,6 +10,11 @@ from django.urls import reverse
 
 from django.core.cache import cache
 
+from django.utils.translation import pgettext_lazy
+
+from django.utils.translation import gettext as _
+
+
 # Товар для нашей витрины
 class Product(models.Model):
     name = models.CharField(
