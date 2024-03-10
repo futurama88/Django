@@ -19,6 +19,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from django.utils import timezone
+
+from django.shortcuts import redirect
+
+import pytz
+
 
 # def create_post(request):
 #     form = PostForm()
@@ -120,7 +126,13 @@ class PostView(ListView):
         # представлении на какую-нибудь строку, будет выведено её содержимое.
         # context['next_sale'] = "Распродажа в среду!"
         context['filterset'] = self.filterset
+        context['current_time'] = timezone.now()
+        context['timezones'] = pytz.common_timezones
         return context
+
+     def post(self, request):
+        request.session['django_timezone'] = request.POST['timezone']
+        return redirect('/news/')
 
 
 class SearchView(ListView):
