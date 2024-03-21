@@ -1,21 +1,20 @@
-from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, PostCategory, Comment
-from datetime import datetime
-from .filters import PostFilter
-from django.shortcuts import render
-from .forms import PostForm
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
-from django.db.models import Exists, OuterRef
-from django.views.decorators.csrf import csrf_protect
-from .models import Subscription, Category
-
-from django.core.cache import cache
-
 import logging
+from datetime import datetime
+
+import permission as permission
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Exists, OuterRef
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+
+from .filters import PostFilter
+from .forms import PostForm
+from .serializers import ArticleSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,18 @@ from django.shortcuts import redirect
 
 import pytz
 
+from django.shortcuts import render
+from rest_framework import viewsets
 
+
+from NEWS.models import *
+from rest_framework.response import Response
+
+
+# @cache_page(60)  # в аргументы к декоратору передаём количество секунд,
+# которые хотим, чтобы страница держалась в кэше.
+# Внимание! Пока страница находится в кэше, изменения,
+# происходящие на ней, учитываться не будут!
 # def create_post(request):
 #     form = PostForm()
 #     if request.method == 'POST':
@@ -33,10 +43,10 @@ import pytz
 #         if form.is_valid():
 #             form.save()
 #             return HttpResponseRedirect('/news/')
-
+#
 #     return render(request, 'post_edit.html', {'form': form})
 
-
+#
 @login_required
 @csrf_protect
 def subscriptions(request):
@@ -67,12 +77,13 @@ def subscriptions(request):
         {'categories': categories_with_subscriptions},
     )
 
+
 class Index(View):
     def get(self, request):
         models = Post.objects.all()
 
         context = {
-            'models': models,
+            'models': models
         }
 
         return HttpResponse(render(request, 'language.html', context))
@@ -120,19 +131,24 @@ class PostView(ListView):
         context = super().get_context_data(**kwargs)
         # К словарю добавим текущую дату в ключ 'time_now'.
         context['time_now'] = datetime.utcnow()
-        # Добавим ещё одну пустую переменную,
-        # чтобы на её примере рассмотреть работу ещё одного фильтра.
-        # context['next_sale'] = None  # При замене значения next_sale в
-        # представлении на какую-нибудь строку, будет выведено её содержимое.
-        # context['next_sale'] = "Распродажа в среду!"
         context['filterset'] = self.filterset
         context['current_time'] = timezone.now()
         context['timezones'] = pytz.common_timezones
         return context
 
-     def post(self, request):
+    def post(self, request):
         request.session['django_timezone'] = request.POST['timezone']
         return redirect('/news/')
+
+    # def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
+    #     obj = cache.get(f'post-{self.kwargs["pk"]}',
+    #                     None)  # кэш очень похож на словарь, и метод get действует так же. Он забирает значение по ключу, если его нет, то забирает None.
+    #
+    #     if not obj:
+    #         obj = super().get_object(queryset=self.queryset)
+    #         cache.set(f'post-{self.kwargs["pk"]}', obj)
+    #         return obj
+    #
 
 
 class SearchView(ListView):
@@ -163,7 +179,7 @@ class PostCategoryView(DetailView):
     template_name = 'posts.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post_detail'
-    
+
     def get_object(self, *args, **kwargs):
         obj = cache.get(f'post_detail-{self.kwargs["pk"]}', None)
         if not obj:
@@ -221,8 +237,6 @@ class PostDelete(DeleteView):
     success_url = reverse_lazy('post_list')
 
 
-
-
 class CategoryListView(PostView):
     model = Post
     template_name = 'category_list.html'
@@ -249,15 +263,18 @@ def subscribe(request, pk):
     message = 'Вы успешно подписались на рассылку новостей категории '
     return render(request, 'subscribe.html', {'postCategory': postCategory, 'message': message})
 
+
 # class IndexView(View):
 #     def get(self, request):
-#         printer.delay(10)
+#         printer.apply_async([10],
+#                             eta=datetime.now() + timedelta(seconds=5))
 #         hello.delay()
 #         return HttpResponse('Hello!')
+
 
 class ArticleViewset(viewsets.ModelViewSet):
     queryset = Post.objects.filter(categoryType='AR')
     serializer_class = ArticleSerializer
 
 
-
+ 
