@@ -2,10 +2,10 @@ from .models import *
 from rest_framework import serializers
 
 
-class ArticleSerializer(serializers.HyperlinkedModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['name', 'title', 'text', 'rating', 'categoryType', 'postCategory', 'dataCreation', ]
+        fields = ['title', 'text', 'rating', 'categoryType', 'postCategory', 'dataCreation', ]
 
 #
 # class ArticleSerializer(serializers. ModelSerializer):
