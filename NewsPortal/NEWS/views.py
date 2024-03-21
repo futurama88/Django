@@ -254,3 +254,10 @@ def subscribe(request, pk):
 #         printer.delay(10)
 #         hello.delay()
 #         return HttpResponse('Hello!')
+
+class ArticleViewset(viewsets.ModelViewSet):
+    queryset = Post.objects.filter(categoryType='AR')
+    serializer_class = ArticleSerializer
+
+
+
