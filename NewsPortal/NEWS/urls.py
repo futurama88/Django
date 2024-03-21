@@ -1,7 +1,7 @@
 from django.urls import path
 # Импортируем созданное нами представление
-from .views import (PostView, PostCategoryView, CommentView, ArticleView, SearchView, create_post,
-                    PostUpdate, PostDelete, PostCreate, subscriptions)
+from .views import (PostView, PostCategoryView, CommentView, ArticleView, SearchView, 
+                    PostUpdate, PostDelete, PostCreate, subscriptions, CategoryListView, subscribe,)
 from django.views.decorators.cache import cache_page
 
 
@@ -19,7 +19,6 @@ urlpatterns = [
     path('comment/<int:pk>', CommentView.as_view()),
     path('article/<int:pk>', ArticleView.as_view()),
     path('search/', SearchView.as_view()),
-    path('createfunc/', create_post),
     path('<int:pk>/update/', PostUpdate.as_view(), name='post_update'),
     path('<int:pk>/delete/', PostDelete.as_view(), name='post_delete'),
     path('create/', PostCreate.as_view(), name='post_create'),
